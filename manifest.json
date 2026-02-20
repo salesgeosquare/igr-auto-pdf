@@ -1,0 +1,37 @@
+{
+    "manifest_version": 3,
+    "name": "IGR Maharashtra Automation Pro",
+    "version": "1.1",
+    "description": "High-performance automation for IGR Maharashtra search results.",
+    "incognito": "spanning",
+    "permissions": [
+        "storage",
+        "downloads",
+        "activeTab",
+        "scripting",
+        "debugger",
+        "tabs"
+    ],
+    "host_permissions": [
+        "https://freesearchigrservice.maharashtra.gov.in/*",
+        "https://*.maharashtra.gov.in/*",
+        "https://igrmahhelpline.gov.in/*",
+        "<all_urls>"
+    ],
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://freesearchigrservice.maharashtra.gov.in/*"
+            ],
+            "js": [
+                "content.js"
+            ]
+        }
+    ]
+}

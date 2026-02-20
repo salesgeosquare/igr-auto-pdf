@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IGR Automation Pro</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text: #f8fafc;
+            --text-dim: #94a3b8;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            width: 350px;
+            margin: 0;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        .container {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 12px;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            margin: 0;
+            background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .status-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .stat-label {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: var(--text);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .settings-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(15, 23, 42, 0.5);
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-top: 4px;
+        }
+
+        .settings-section input {
+            width: 50px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        #logArea {
+            background: #020617;
+            border-radius: 12px;
+            height: 100px;
+            padding: 10px;
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 0.75rem;
+            overflow-y: auto;
+            border: 1px solid #1e293b;
+            color: #10b981;
+            scroll-behavior: smooth;
+        }
+
+        .log-entry {
+            margin-bottom: 4px;
+            line-height: 1.4;
+            border-left: 2px solid transparent;
+            padding-left: 6px;
+        }
+
+        .log-info {
+            border-left-color: #6366f1;
+        }
+
+        .log-success {
+            border-left-color: #22c55e;
+            color: #22c55e;
+        }
+
+        .log-warn {
+            border-left-color: #f59e0b;
+            color: #f59e0b;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        button {
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #4f46e5 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background-color: #1e293b;
+            color: white;
+            border: 1px solid #334155;
+        }
+
+        .btn-secondary:hover {
+            background-color: #334155;
+        }
+
+        .loader {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-bottom-color: #fff;
+            border-radius: 50%;
+            animation: rotation 1s linear infinite;
+            display: none;
+        }
+
+        @keyframes rotation {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        footer {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            text-align: center;
+            margin-top: 4px;
+            opacity: 0.8;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>IGR Automation Pro</h1>
+        </header>
+
+        <div class="status-card">
+            <div class="stat-row">
+                <span class="stat-label">Status:</span>
+                <span id="taskStatus" class="stat-value">Idle</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Documents:</span>
+                <span id="urlCount" class="stat-value">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Progress:</span>
+                <span id="pageCount" class="stat-value">Page 0</span>
+            </div>
+            <div class="settings-section">
+                <span class="stat-label">Delay (seconds):</span>
+                <input type="number" id="delayInput" min="2" max="20" value="3">
+            </div>
+        </div>
+
+        <div id="logArea">
+            <div class="log-entry log-info">> Ready to start. Perform search on IGR first.</div>
+        </div>
+
+        <div class="controls">
+            <button id="startBtn" class="btn-primary">
+                <span class="loader" id="startLoader"></span>
+                Start Extraction
+            </button>
+            <div style="display: flex; gap: 8px;">
+                <button id="downloadBtn" class="btn-secondary hidden" style="flex: 1;">
+                    Export CSV
+                </button>
+                <button id="resetBtn" class="btn-secondary" style="flex: 1;">
+                    Reset
+                </button>
+            </div>
+        </div>
+
+        <footer>
+            PRO Version 1.0 • High-Performance Scraper
+        </footer>
+    </div>
+    <script src="popup.js"></script>
+</body>
+
+</html>
