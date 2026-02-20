@@ -158,12 +158,30 @@ document.addEventListener('DOMContentLoaded', () => {
             addLog(request.message, request.logType || 'info');
         }
 
+        if (request.action === 'updateProgress') {
+            const container = document.getElementById('progressBarContainer');
+            const bar = document.getElementById('progressBar');
+            if (container && bar) {
+                container.style.display = 'block';
+                bar.style.width = `${request.progress}%`;
+            }
+            taskStatus.textContent = `Processing (${request.current}/${request.total})`;
+        }
+
         if (request.action === 'finished') {
             isRunning = false;
             chrome.storage.local.set({ isRunning: false });
             updateUI(false);
             taskStatus.textContent = 'Completed!';
             taskStatus.style.color = '#22c55e';
+
+            const bar = document.getElementById('progressBar');
+            const container = document.getElementById('progressBarContainer');
+            if (bar) bar.style.width = '100%';
+            setTimeout(() => {
+                if (container) container.style.display = 'none';
+            }, 2000);
+
             addLog('Extraction completed successfully.', 'success');
         }
     });

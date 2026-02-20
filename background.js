@@ -1,6 +1,7 @@
 let downloadQueue = [];
 let isProcessing = false;
 let sourceTabId = null;
+let batchTotal = 0;
 
 // ─── Message Hub ──────────────────────────────────────────────────────────────
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -10,6 +11,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             link => !downloadQueue.some(q => q.id === link.id)
         );
         downloadQueue = [...downloadQueue, ...newLinks];
+        batchTotal = downloadQueue.length; // Set total for progress bar
         sourceTabId = sender.tab.id;
         console.log(`[IGR] Queue: ${downloadQueue.length} items`);
 
@@ -54,8 +56,19 @@ async function processNext() {
     }
 
     const linkInfo = downloadQueue.shift();
-    sendLog(`Row ${linkInfo.index + 1} of ${linkInfo.index + 1 + downloadQueue.length}: Processing...`, "info");
-    console.log(`[IGR] → Row index ${linkInfo.index} | filename: ${linkInfo.filename}`);
+
+    // Send progress to popup
+    const completed = batchTotal - downloadQueue.length;
+    const progress = Math.round((completed / batchTotal) * 100);
+    chrome.runtime.sendMessage({
+        action: 'updateProgress',
+        progress: progress,
+        current: completed,
+        total: batchTotal
+    }).catch(() => { });
+
+    sendLog(`Row ${linkInfo.index + 1}: Processing (${completed}/${batchTotal})...`, "info");
+    console.log(`[IGR] → Row index ${linkInfo.index} | progress: ${progress}%`);
 
     try {
         if (!sourceTabId || !(await checkTabExists(sourceTabId))) {
